@@ -3,6 +3,25 @@ import axios from 'axios';
 const API_KEY = 'AIzaSyA59zx2HIq7AfnpKJ87vfQoTuZm2b9uUdw';
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
+// Helper to call YouTube API via Next.js API route or directly
+async function callYouTubeAPI(endpoint: string, params: Record<string, any>) {
+  // Try using API route first (for production)
+  if (typeof window !== 'undefined') {
+    try {
+      const queryParams = new URLSearchParams({ endpoint, ...params });
+      const response = await axios.get(`/api/youtube?${queryParams.toString()}`);
+      return response;
+    } catch (error) {
+      console.error('API route error, falling back to direct call:', error);
+    }
+  }
+
+  // Fallback to direct call
+  return await axios.get(`${BASE_URL}/${endpoint}`, {
+    params: { ...params, key: API_KEY },
+  });
+}
+
 export interface ChannelStats {
   id: string;
   title: string;
@@ -55,12 +74,9 @@ export interface SearchResult {
 // Get Channel Statistics
 export async function getChannelStats(channelId: string): Promise<ChannelStats | null> {
   try {
-    const response = await axios.get(`${BASE_URL}/channels`, {
-      params: {
-        part: 'snippet,statistics,contentDetails',
-        id: channelId,
-        key: API_KEY,
-      },
+    const response = await callYouTubeAPI('channels', {
+      part: 'snippet,statistics,contentDetails',
+      id: channelId,
     });
 
     if (response.data.items && response.data.items.length > 0) {
@@ -92,12 +108,9 @@ export async function getChannelStats(channelId: string): Promise<ChannelStats |
 // Get Video Statistics
 export async function getVideoStats(videoId: string): Promise<VideoStats | null> {
   try {
-    const response = await axios.get(`${BASE_URL}/videos`, {
-      params: {
-        part: 'snippet,statistics,contentDetails',
-        id: videoId,
-        key: API_KEY,
-      },
+    const response = await callYouTubeAPI('videos', {
+      part: 'snippet,statistics,contentDetails',
+      id: videoId,
     });
 
     if (response.data.items && response.data.items.length > 0) {
@@ -130,15 +143,12 @@ export async function getVideoStats(videoId: string): Promise<VideoStats | null>
 // Get Channel Videos
 export async function getChannelVideos(channelId: string, maxResults: number = 10) {
   try {
-    const response = await axios.get(`${BASE_URL}/search`, {
-      params: {
-        part: 'snippet',
-        channelId: channelId,
-        maxResults: maxResults,
-        order: 'date',
-        type: 'video',
-        key: API_KEY,
-      },
+    const response = await callYouTubeAPI('search', {
+      part: 'snippet',
+      channelId: channelId,
+      maxResults: maxResults,
+      order: 'date',
+      type: 'video',
     });
 
     return response.data.items;
@@ -151,14 +161,11 @@ export async function getChannelVideos(channelId: string, maxResults: number = 1
 // Get Trending Videos by Region
 export async function getTrendingVideos(regionCode: string = 'ID', maxResults: number = 20) {
   try {
-    const response = await axios.get(`${BASE_URL}/videos`, {
-      params: {
-        part: 'snippet,statistics',
-        chart: 'mostPopular',
-        regionCode: regionCode,
-        maxResults: maxResults,
-        key: API_KEY,
-      },
+    const response = await callYouTubeAPI('videos', {
+      part: 'snippet,statistics,contentDetails',
+      chart: 'mostPopular',
+      regionCode: regionCode,
+      maxResults: maxResults,
     });
 
     return response.data.items;
@@ -171,14 +178,11 @@ export async function getTrendingVideos(regionCode: string = 'ID', maxResults: n
 // Search Videos/Channels
 export async function searchYouTube(query: string, type: 'video' | 'channel' = 'video', maxResults: number = 10): Promise<SearchResult[]> {
   try {
-    const response = await axios.get(`${BASE_URL}/search`, {
-      params: {
-        part: 'snippet',
-        q: query,
-        type: type,
-        maxResults: maxResults,
-        key: API_KEY,
-      },
+    const response = await callYouTubeAPI('search', {
+      part: 'snippet',
+      q: query,
+      type: type,
+      maxResults: maxResults,
     });
 
     return response.data.items.map((item: any) => ({
