@@ -1,17 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Youtube, Search, TrendingUp, BarChart3, Users, Eye, Video, Tag, Target } from 'lucide-react';
-import ChannelAnalytics from '@/components/ChannelAnalytics';
-import VideoAnalytics from '@/components/VideoAnalytics';
+import { Youtube, Search, TrendingUp, Tag, Target, Sparkles } from 'lucide-react';
 import TrendingVideos from '@/components/TrendingVideos';
 import KeywordAnalysis from '@/components/KeywordAnalysis';
 import CompetitorAnalysis from '@/components/CompetitorAnalysis';
 import TagGenerator from '@/components/TagGenerator';
-import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'channel' | 'video' | 'trending' | 'keyword' | 'competitor' | 'tags'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'trending' | 'keyword' | 'competitor' | 'tags'>('trending');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -23,13 +20,13 @@ export default function Home() {
               <Youtube className="w-10 h-10 text-red-500" />
               <div>
                 <h1 className="text-2xl font-bold text-white">YouTube Analytics Pro</h1>
-                <p className="text-sm text-gray-300">Platform Analitik YouTube Lengkap</p>
+                <p className="text-sm text-gray-300">Exclusive Tools NOT Available in YouTube Studio</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-300">
-                <Eye className="w-4 h-4" />
-                <span>Real-time Data</span>
+              <div className="hidden md:flex items-center space-x-2 text-sm">
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                <span className="text-yellow-400 font-semibold">100% FREE</span>
               </div>
             </div>
           </div>
@@ -39,89 +36,53 @@ export default function Home() {
       {/* Navigation Tabs */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-black/20 backdrop-blur-sm rounded-xl p-2 border border-white/10">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-                activeTab === 'dashboard'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
-                  : 'text-gray-300 hover:bg-white/10'
-              }`}
-            >
-              <BarChart3 className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Dashboard</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('channel')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-                activeTab === 'channel'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
-                  : 'text-gray-300 hover:bg-white/10'
-              }`}
-            >
-              <Users className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Channel</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('video')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-                activeTab === 'video'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
-                  : 'text-gray-300 hover:bg-white/10'
-              }`}
-            >
-              <Video className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Video</span>
-            </button>
-
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <button
               onClick={() => setActiveTab('trending')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+              className={`flex items-center justify-center space-x-2 px-6 py-4 rounded-lg transition-all ${
                 activeTab === 'trending'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg scale-105'
                   : 'text-gray-300 hover:bg-white/10'
               }`}
             >
-              <TrendingUp className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Trending</span>
+              <TrendingUp className="w-6 h-6" />
+              <span className="font-medium">Trending Videos</span>
             </button>
 
             <button
               onClick={() => setActiveTab('keyword')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+              className={`flex items-center justify-center space-x-2 px-6 py-4 rounded-lg transition-all ${
                 activeTab === 'keyword'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg scale-105'
                   : 'text-gray-300 hover:bg-white/10'
               }`}
             >
-              <Search className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Keyword</span>
+              <Search className="w-6 h-6" />
+              <span className="font-medium">Keyword Research</span>
             </button>
 
             <button
               onClick={() => setActiveTab('competitor')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+              className={`flex items-center justify-center space-x-2 px-6 py-4 rounded-lg transition-all ${
                 activeTab === 'competitor'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg scale-105'
                   : 'text-gray-300 hover:bg-white/10'
               }`}
             >
-              <Target className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Competitor</span>
+              <Target className="w-6 h-6" />
+              <span className="font-medium">Competitor Analysis</span>
             </button>
 
             <button
               onClick={() => setActiveTab('tags')}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+              className={`flex items-center justify-center space-x-2 px-6 py-4 rounded-lg transition-all ${
                 activeTab === 'tags'
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg scale-105'
                   : 'text-gray-300 hover:bg-white/10'
               }`}
             >
-              <Tag className="w-5 h-5" />
-              <span className="font-medium hidden md:inline">Tags</span>
+              <Tag className="w-6 h-6" />
+              <span className="font-medium">Tag Generator</span>
             </button>
           </div>
         </div>
@@ -129,9 +90,6 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pb-12">
-        {activeTab === 'dashboard' && <AnalyticsDashboard />}
-        {activeTab === 'channel' && <ChannelAnalytics />}
-        {activeTab === 'video' && <VideoAnalytics />}
         {activeTab === 'trending' && <TrendingVideos />}
         {activeTab === 'keyword' && <KeywordAnalysis />}
         {activeTab === 'competitor' && <CompetitorAnalysis />}
@@ -142,8 +100,13 @@ export default function Home() {
       <footer className="bg-black/30 backdrop-blur-md border-t border-white/10 mt-12">
         <div className="container mx-auto px-4 py-6">
           <div className="text-center text-gray-400 text-sm">
-            <p>© 2025 YouTube Analytics Pro. Dibuat dengan ❤️ untuk YouTubers Indonesia</p>
-            <p className="mt-2">Powered by YouTube Data API v3</p>
+            <p className="flex items-center justify-center space-x-2">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span>© 2025 YouTube Analytics Pro - 100% FREE Forever</span>
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+            </p>
+            <p className="mt-2 text-gray-500">Exclusive tools NOT available in YouTube Studio</p>
+            <p className="mt-2 text-xs text-gray-600">Powered by YouTube Data API v3</p>
           </div>
         </div>
       </footer>
