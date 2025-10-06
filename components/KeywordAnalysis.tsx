@@ -1,25 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, TrendingUp, Eye, Video, Clock, ExternalLink, Award } from 'lucide-react';
-import { searchYouTube, formatNumber } from '@/lib/youtube';
-import type { SearchResult } from '@/lib/youtube';
+import { Search, TrendingUp, Eye, Video, Clock, ExternalLink, Award, ThumbsUp, MessageSquare, Play } from 'lucide-react';
+import { searchVideosWithStats, formatNumber, formatDuration, calculateEngagementRate } from '@/lib/youtube';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
 export default function KeywordAnalysis() {
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [searchType, setSearchType] = useState<'video' | 'channel'>('video');
+  const [videos, setVideos] = useState<any[]>([]);
+  const [sortBy, setSortBy] = useState<'relevance' | 'views' | 'likes' | 'date'>('relevance');
 
   const handleSearch = async () => {
     if (!keyword.trim()) return;
 
     setLoading(true);
     try {
-      const data = await searchYouTube(keyword, searchType, 20);
-      setResults(data);
+      const data = await searchVideosWithStats(keyword, 50);
+      setVideos(data);
     } catch (error) {
       console.error('Error:', error);
       alert('Gagal melakukan pencarian. Silakan coba lagi.');
@@ -28,51 +27,47 @@ export default function KeywordAnalysis() {
     }
   };
 
+  const getSortedVideos = () => {
+    if (sortBy === 'relevance') return videos;
+
+    return [...videos].sort((a, b) => {
+      if (sortBy === 'views') {
+        return parseInt(b.statistics.viewCount || '0') - parseInt(a.statistics.viewCount || '0');
+      }
+      if (sortBy === 'likes') {
+        return parseInt(b.statistics.likeCount || '0') - parseInt(a.statistics.likeCount || '0');
+      }
+      if (sortBy === 'date') {
+        return new Date(b.snippet.publishedAt).getTime() - new Date(a.snippet.publishedAt).getTime();
+      }
+      return 0;
+    });
+  };
+
+  const sortedVideos = getSortedVideos();
+
   const popularKeywords = [
-    'tutorial programming',
-    'belajar coding',
-    'web development',
-    'javascript tutorial',
-    'react js',
-    'python programming',
-    'machine learning',
-    'data science',
+    'tutorial',
+    'review',
+    'gaming',
+    'vlog',
+    'musik',
+    'olahraga',
+    'teknologi',
+    'kuliner',
   ];
 
   return (
     <div className="space-y-6">
       {/* Search Box */}
       <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-        <h2 className="text-2xl font-bold text-white mb-4">Keyword & SEO Analysis</h2>
+        <h2 className="text-2xl font-bold text-white mb-4 flex items-center space-x-2">
+          <Search className="w-8 h-8 text-red-500" />
+          <span>Video Search by Keyword</span>
+        </h2>
         <p className="text-gray-300 mb-4">
-          Cari dan analisa keyword untuk menemukan peluang konten dan strategi SEO YouTube
+          Cari video berdasarkan keyword dan urutkan berdasarkan views, likes, atau tanggal upload
         </p>
-
-        {/* Search Type Toggle */}
-        <div className="flex space-x-2 mb-4">
-          <button
-            onClick={() => setSearchType('video')}
-            className={`px-4 py-2 rounded-lg transition-all ${
-              searchType === 'video'
-                ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
-                : 'bg-white/5 text-gray-300 hover:bg-white/10'
-            }`}
-          >
-            <Video className="w-4 h-4 inline mr-2" />
-            Cari Video
-          </button>
-          <button
-            onClick={() => setSearchType('channel')}
-            className={`px-4 py-2 rounded-lg transition-all ${
-              searchType === 'channel'
-                ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
-                : 'bg-white/5 text-gray-300 hover:bg-white/10'
-            }`}
-          >
-            <Award className="w-4 h-4 inline mr-2" />
-            Cari Channel
-          </button>
-        </div>
 
         <div className="flex gap-3">
           <input
@@ -100,7 +95,10 @@ export default function KeywordAnalysis() {
             {popularKeywords.map((kw, index) => (
               <button
                 key={index}
-                onClick={() => setKeyword(kw)}
+                onClick={() => {
+                  setKeyword(kw);
+                  handleSearch();
+                }}
                 className="px-3 py-1 bg-white/5 text-gray-300 rounded-full text-sm hover:bg-white/10 transition-all"
               >
                 {kw}
@@ -110,91 +108,172 @@ export default function KeywordAnalysis() {
         </div>
       </div>
 
+      {/* Sort Options */}
+      {videos.length > 0 && (
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+          <div className="flex items-center space-x-2 overflow-x-auto">
+            <span className="text-gray-300 text-sm font-semibold whitespace-nowrap">Sort by:</span>
+            <button
+              onClick={() => setSortBy('relevance')}
+              className={`px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
+                sortBy === 'relevance'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              🎯 Relevance
+            </button>
+            <button
+              onClick={() => setSortBy('views')}
+              className={`px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
+                sortBy === 'views'
+                  ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              👁️ Most Views
+            </button>
+            <button
+              onClick={() => setSortBy('likes')}
+              className={`px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
+                sortBy === 'likes'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              👍 Most Likes
+            </button>
+            <button
+              onClick={() => setSortBy('date')}
+              className={`px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
+                sortBy === 'date'
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              📅 Latest
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Search Results */}
       {loading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
-          <p className="text-gray-300 mt-4">Mencari {searchType === 'video' ? 'video' : 'channel'}...</p>
+          <p className="text-gray-300 mt-4">Mencari video...</p>
         </div>
-      ) : results.length > 0 ? (
+      ) : sortedVideos.length > 0 ? (
         <div className="space-y-6">
           {/* Results Header */}
           <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-md rounded-xl p-6 border border-purple-500/30">
             <h3 className="text-xl font-bold text-white">
-              Ditemukan {results.length} {searchType === 'video' ? 'video' : 'channel'} untuk keyword "{keyword}"
+              Ditemukan {sortedVideos.length} video untuk keyword "{keyword}"
             </h3>
             <p className="text-gray-300 mt-2">
               Analisa hasil pencarian untuk mendapatkan insight tentang kompetisi dan peluang konten
             </p>
           </div>
 
-          {/* Results Grid */}
+          {/* Videos Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map((result, index) => (
+            {sortedVideos.map((video, index) => (
               <div
-                key={result.id}
+                key={video.id}
                 className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20 card-hover"
               >
                 {/* Thumbnail */}
-                <div className="relative">
+                <div className="relative group">
                   <img
-                    src={result.thumbnails.medium}
-                    alt={result.title}
+                    src={video.snippet.thumbnails.high.url}
+                    alt={video.snippet.title}
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute top-2 left-2 bg-purple-500 text-white px-2 py-1 rounded text-xs font-bold">
+                  <div className="absolute top-2 left-2 bg-purple-500 text-white px-2 py-1 rounded text-sm font-bold">
                     #{index + 1}
+                  </div>
+                  <div className="absolute bottom-2 right-2 bg-black/90 text-white px-2 py-1 rounded text-xs font-semibold flex items-center space-x-1">
+                    <Clock className="w-3 h-3" />
+                    <span>{formatDuration(video.contentDetails?.duration || 'PT0S')}</span>
+                  </div>
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Play className="w-16 h-16 text-white" />
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-4 space-y-3">
-                  <h3 className="text-white font-semibold line-clamp-2">
-                    {result.title}
+                  <h3 className="text-white font-semibold line-clamp-2 hover:text-red-400 transition-colors">
+                    <a
+                      href={`https://youtube.com/watch?v=${video.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {video.snippet.title}
+                    </a>
                   </h3>
 
-                  <p className="text-gray-400 text-sm line-clamp-2">
-                    {result.description}
-                  </p>
+                  <p className="text-gray-400 text-sm">{video.snippet.channelTitle}</p>
 
-                  {/* Channel Info */}
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Award className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-300">{result.channelTitle}</span>
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="bg-blue-500/20 rounded p-2 text-center">
+                      <Eye className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                      <p className="text-white font-semibold">{formatNumber(video.statistics.viewCount)}</p>
+                      <p className="text-gray-400">Views</p>
+                    </div>
+                    <div className="bg-green-500/20 rounded p-2 text-center">
+                      <ThumbsUp className="w-4 h-4 text-green-400 mx-auto mb-1" />
+                      <p className="text-white font-semibold">{formatNumber(video.statistics.likeCount || '0')}</p>
+                      <p className="text-gray-400">Likes</p>
+                    </div>
+                    <div className="bg-purple-500/20 rounded p-2 text-center">
+                      <MessageSquare className="w-4 h-4 text-purple-400 mx-auto mb-1" />
+                      <p className="text-white font-semibold">{formatNumber(video.statistics.commentCount || '0')}</p>
+                      <p className="text-gray-400">Comments</p>
+                    </div>
+                  </div>
+
+                  {/* Engagement Rate */}
+                  <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded p-3 border border-orange-500/30">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-300 text-xs">Engagement</span>
+                      <span className="text-orange-400 font-bold text-sm">
+                        {calculateEngagementRate(
+                          video.statistics.likeCount || '0',
+                          video.statistics.commentCount || '0',
+                          video.statistics.viewCount
+                        )}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-1.5 mt-2">
+                      <div
+                        className="bg-gradient-to-r from-orange-400 to-red-500 h-1.5 rounded-full"
+                        style={{
+                          width: `${Math.min(parseFloat(calculateEngagementRate(
+                            video.statistics.likeCount || '0',
+                            video.statistics.commentCount || '0',
+                            video.statistics.viewCount
+                          )) * 10, 100)}%`,
+                        }}
+                      ></div>
+                    </div>
                   </div>
 
                   {/* Published Date */}
-                  <div className="flex items-center space-x-2 text-xs text-gray-400">
-                    <Clock className="w-3 h-3" />
-                    <span>{format(new Date(result.publishedAt), 'dd MMM yyyy', { locale: id })}</span>
-                  </div>
-
-                  {/* Type Badge */}
-                  <div className="flex items-center space-x-2">
-                    {result.type === 'video' ? (
-                      <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded text-xs border border-red-500/30">
-                        Video
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs border border-blue-500/30">
-                        Channel
-                      </span>
-                    )}
-                  </div>
+                  <p className="text-gray-400 text-xs">
+                    Published: {format(new Date(video.snippet.publishedAt), 'dd MMM yyyy, HH:mm', { locale: id })}
+                  </p>
 
                   {/* View Button */}
                   <a
-                    href={
-                      result.type === 'video'
-                        ? `https://youtube.com/watch?v=${result.id}`
-                        : `https://youtube.com/channel/${result.id}`
-                    }
+                    href={`https://youtube.com/watch?v=${video.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                    className="w-full inline-flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition-all"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>Lihat di YouTube</span>
+                    <span>Watch on YouTube</span>
                   </a>
                 </div>
               </div>

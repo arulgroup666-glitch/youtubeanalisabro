@@ -286,3 +286,31 @@ export async function getChannelIdByHandle(handle: string): Promise<string | nul
     return null;
   }
 }
+
+// Search videos with detailed statistics
+export async function searchVideosWithStats(query: string, maxResults: number = 20) {
+  try {
+    // Step 1: Search for videos
+    const searchResponse = await callYouTubeAPI('search', {
+      part: 'snippet',
+      q: query,
+      type: 'video',
+      maxResults: maxResults,
+    });
+
+    const videoIds = searchResponse.data.items.map((item: any) => item.id.videoId).join(',');
+
+    if (!videoIds) return [];
+
+    // Step 2: Get detailed statistics for all videos
+    const statsResponse = await callYouTubeAPI('videos', {
+      part: 'snippet,statistics,contentDetails',
+      id: videoIds,
+    });
+
+    return statsResponse.data.items;
+  } catch (error) {
+    console.error('Error searching videos with stats:', error);
+    return [];
+  }
+}
