@@ -266,3 +266,23 @@ export function calculateEngagementRate(likes: string, comments: string, views: 
   const rate = ((l + c) / v) * 100;
   return rate.toFixed(2);
 }
+
+// Search channel by handle or custom URL and get channel ID
+export async function getChannelIdByHandle(handle: string): Promise<string | null> {
+  try {
+    // Remove @ if present
+    const cleanHandle = handle.replace('@', '');
+
+    // Try searching for the channel
+    const results = await searchYouTube(cleanHandle, 'channel', 1);
+
+    if (results.length > 0) {
+      return results[0].id;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error getting channel by handle:', error);
+    return null;
+  }
+}

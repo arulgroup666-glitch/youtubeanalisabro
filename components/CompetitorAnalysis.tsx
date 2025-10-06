@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Users, Eye, Video, TrendingUp, X, Plus, BarChart3, Target } from 'lucide-react';
-import { getChannelStats, extractIdFromUrl, formatNumber } from '@/lib/youtube';
+import { Search, Users, Eye, Video, TrendingUp, X, Plus, BarChart3, Target, AlertCircle } from 'lucide-react';
+import { getChannelStats, extractIdFromUrl, formatNumber, getChannelIdByHandle } from '@/lib/youtube';
 import type { ChannelStats } from '@/lib/youtube';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -28,14 +28,27 @@ export default function CompetitorAnalysis() {
 
     setLoading(true);
     try {
-      const { type, id } = extractIdFromUrl(channelInput);
-      let channelId = channelInput;
+      let channelId = channelInput.trim();
 
+      // Step 1: Try to extract ID from URL
+      const { type, id } = extractIdFromUrl(channelInput);
       if (type === 'channel' && id) {
         channelId = id;
       }
 
-      const stats = await getChannelStats(channelId);
+      // Step 2: Try to get channel stats directly
+      let stats = await getChannelStats(channelId);
+
+      // Step 3: If failed, try searching by handle/name
+      if (!stats) {
+        console.log('Direct fetch failed, trying search...');
+        const searchedId = await getChannelIdByHandle(channelInput);
+        if (searchedId) {
+          channelId = searchedId;
+          stats = await getChannelStats(channelId);
+        }
+      }
+
       if (stats) {
         const competitorData: CompetitorData = {
           ...stats,
@@ -44,11 +57,11 @@ export default function CompetitorAnalysis() {
         setCompetitors([...competitors, competitorData]);
         setChannelInput('');
       } else {
-        alert('Channel tidak ditemukan');
+        alert('Channel tidak ditemukan. Coba dengan:\n- Channel ID (UC...)\n- URL lengkap (youtube.com/@channelname)\n- Nama channel untuk search');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Gagal memuat data channel');
+      alert('Gagal memuat data channel. Silakan coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -113,6 +126,21 @@ export default function CompetitorAnalysis() {
           Bandingkan hingga 5 channel sekaligus untuk analisa kompetitor
         </p>
 
+        {/* Help Text */}
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-4">
+          <div className="flex items-start space-x-2">
+            <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-200">
+              <p className="font-semibold mb-1">Cara menambahkan channel:</p>
+              <ul className="list-disc list-inside space-y-1 text-blue-300">
+                <li>Channel ID: <code className="bg-blue-900/30 px-1 rounded">UCqECaJ8Gagnn7YCbPEzWH6g</code></li>
+                <li>URL lengkap: <code className="bg-blue-900/30 px-1 rounded">youtube.com/@channelname</code></li>
+                <li>Nama channel: <code className="bg-blue-900/30 px-1 rounded">MrBeast</code> (akan di-search)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {/* Add Channel Input */}
         <div className="flex gap-3">
           <input
@@ -120,7 +148,7 @@ export default function CompetitorAnalysis() {
             value={channelInput}
             onChange={(e) => setChannelInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddChannel()}
-            placeholder="Channel ID atau URL"
+            placeholder="Channel ID, URL, atau nama channel..."
             disabled={competitors.length >= 5}
             className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
           />
