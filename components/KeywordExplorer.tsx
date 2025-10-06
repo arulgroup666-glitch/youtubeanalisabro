@@ -26,7 +26,7 @@ export default function KeywordExplorer() {
     const videos = await searchVideosWithStats(kw, 50);
 
     const videoCount = videos.length;
-    const totalViews = videos.reduce((sum, v) => sum + parseInt(v.statistics.viewCount || '0'), 0);
+    const totalViews = videos.reduce((sum: number, v: any) => sum + parseInt(v.statistics.viewCount || '0'), 0);
     const avgViews = videoCount > 0 ? totalViews / videoCount : 0;
 
     // Simulate search volume based on video count and avg views
@@ -378,7 +378,7 @@ export default function KeywordExplorer() {
                   <span>Medium Opportunity (40-69)</span>
                 </h4>
                 <ul className="text-gray-300 text-sm space-y-1 list-disc list-inside">
-                  <li>Quality > Quantity</li>
+                  <li>Quality &gt; Quantity</li>
                   <li>Better production value</li>
                   <li>Strong SEO optimization</li>
                   <li>Build audience loyalty</li>
