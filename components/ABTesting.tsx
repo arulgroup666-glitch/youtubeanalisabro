@@ -55,8 +55,8 @@ export default function ABTesting() {
       insights.push({ type: 'positive', text: 'Uses brackets' });
     }
 
-    // Emoji
-    const emojiRegex = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+    // Emoji - simple detection without unicode flag
+    const emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]/;
     if (emojiRegex.test(title)) {
       score += 10;
       insights.push({ type: 'positive', text: 'Includes emoji' });
