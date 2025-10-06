@@ -50,8 +50,9 @@ export default function TagGenerator() {
         keyword.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
       ];
 
-      const allTags = [...new Set([...generatedTags, ...variations])];
-      setTags(allTags);
+      const combined = [...generatedTags, ...variations];
+      const uniqueTags = Array.from(new Set(combined));
+      setTags(uniqueTags);
       setSelectedTags([]);
     } catch (error) {
       console.error('Error:', error);
