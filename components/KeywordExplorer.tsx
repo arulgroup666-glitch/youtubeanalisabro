@@ -388,7 +388,7 @@ export default function KeywordExplorer() {
               <div className="bg-white/5 rounded-lg p-4">
                 <h4 className="text-white font-semibold mb-2 flex items-center space-x-2">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
-                  <span>Low Opportunity (&lt;40)</span>
+                  <span>Low Opportunity (&lt; 40)</span>
                 </h4>
                 <ul className="text-gray-300 text-sm space-y-1 list-disc list-inside">
                   <li>Consider long-tail variations</li>

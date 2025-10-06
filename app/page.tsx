@@ -165,6 +165,9 @@ export default function Home() {
             </p>
             <p className="mt-2 text-gray-500">Exclusive tools NOT available in YouTube Studio</p>
             <p className="mt-2 text-xs text-gray-600">Powered by YouTube Data API v3</p>
+            <p className="mt-3 text-xs text-gray-600">
+              Created by <span className="text-red-400 font-semibold">ArulCG</span>
+            </p>
           </div>
         </div>
       </footer>
