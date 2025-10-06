@@ -290,7 +290,7 @@ export default function KeywordAnalysis() {
               <div className="bg-white/5 rounded-lg p-4">
                 <h4 className="text-white font-semibold mb-2">📊 Analisa Kompetisi</h4>
                 <p className="text-gray-300 text-sm">
-                  Total {results.length} konten ditemukan. Semakin banyak hasil, semakin tinggi kompetisi untuk keyword ini.
+                  Total {sortedVideos.length} konten ditemukan. Semakin banyak hasil, semakin tinggi kompetisi untuk keyword ini.
                 </p>
               </div>
               <div className="bg-white/5 rounded-lg p-4">
