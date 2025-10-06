@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY || 'AIzaSyA59zx2HIq7AfnpKJ87vfQoTuZm2b9uUdw';
+const API_KEY = 'AIzaSyA59zx2HIq7AfnpKJ87vfQoTuZm2b9uUdw';
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
 export interface ChannelStats {

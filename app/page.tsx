@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Youtube, Search, TrendingUp, BarChart3, Users, Eye, ThumbsUp, MessageSquare, Calendar, Video } from 'lucide-react';
+import { Youtube, Search, TrendingUp, BarChart3, Users, Eye, Video, Tag, Target } from 'lucide-react';
 import ChannelAnalytics from '@/components/ChannelAnalytics';
 import VideoAnalytics from '@/components/VideoAnalytics';
 import TrendingVideos from '@/components/TrendingVideos';
 import KeywordAnalysis from '@/components/KeywordAnalysis';
+import CompetitorAnalysis from '@/components/CompetitorAnalysis';
+import TagGenerator from '@/components/TagGenerator';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'channel' | 'video' | 'trending' | 'keyword'>('channel');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'channel' | 'video' | 'trending' | 'keyword' | 'competitor' | 'tags'>('dashboard');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -36,7 +39,19 @@ export default function Home() {
       {/* Navigation Tabs */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-black/20 backdrop-blur-sm rounded-xl p-2 border border-white/10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'dashboard'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  : 'text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span className="font-medium hidden md:inline">Dashboard</span>
+            </button>
+
             <button
               onClick={() => setActiveTab('channel')}
               className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
@@ -46,7 +61,7 @@ export default function Home() {
               }`}
             >
               <Users className="w-5 h-5" />
-              <span className="font-medium">Channel Analytics</span>
+              <span className="font-medium hidden md:inline">Channel</span>
             </button>
 
             <button
@@ -58,7 +73,7 @@ export default function Home() {
               }`}
             >
               <Video className="w-5 h-5" />
-              <span className="font-medium">Video Analytics</span>
+              <span className="font-medium hidden md:inline">Video</span>
             </button>
 
             <button
@@ -70,7 +85,7 @@ export default function Home() {
               }`}
             >
               <TrendingUp className="w-5 h-5" />
-              <span className="font-medium">Trending</span>
+              <span className="font-medium hidden md:inline">Trending</span>
             </button>
 
             <button
@@ -82,7 +97,31 @@ export default function Home() {
               }`}
             >
               <Search className="w-5 h-5" />
-              <span className="font-medium">Keyword & SEO</span>
+              <span className="font-medium hidden md:inline">Keyword</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('competitor')}
+              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'competitor'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  : 'text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              <Target className="w-5 h-5" />
+              <span className="font-medium hidden md:inline">Competitor</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('tags')}
+              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'tags'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  : 'text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              <Tag className="w-5 h-5" />
+              <span className="font-medium hidden md:inline">Tags</span>
             </button>
           </div>
         </div>
@@ -90,10 +129,13 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pb-12">
+        {activeTab === 'dashboard' && <AnalyticsDashboard />}
         {activeTab === 'channel' && <ChannelAnalytics />}
         {activeTab === 'video' && <VideoAnalytics />}
         {activeTab === 'trending' && <TrendingVideos />}
         {activeTab === 'keyword' && <KeywordAnalysis />}
+        {activeTab === 'competitor' && <CompetitorAnalysis />}
+        {activeTab === 'tags' && <TagGenerator />}
       </main>
 
       {/* Footer */}
