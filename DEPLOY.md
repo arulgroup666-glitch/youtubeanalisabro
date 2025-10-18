@@ -29,7 +29,7 @@
 
    Di Vercel Dashboard, tambahkan environment variable:
    - Key: `NEXT_PUBLIC_YOUTUBE_API_KEY`
-   - Value: `AIzaSyA59zx2HIq7AfnpKJ87vfQoTuZm2b9uUdw`
+   - Value: `AIzaSyDLVlP4Zz0Vv1tIo4fzq6qi7PspYKTuD9Q`
 
    ![Add Environment Variable](https://vercel.com/docs/concepts/projects/environment-variables)
 
@@ -69,7 +69,7 @@
    ```bash
    vercel env add NEXT_PUBLIC_YOUTUBE_API_KEY
    ```
-   Paste API key: `AIzaSyA59zx2HIq7AfnpKJ87vfQoTuZm2b9uUdw`
+   Paste API key: `AIzaSyDLVlP4Zz0Vv1tIo4fzq6qi7PspYKTuD9Q`
    Select environment: `Production, Preview, Development`
 
 5. **Deploy ke Production**

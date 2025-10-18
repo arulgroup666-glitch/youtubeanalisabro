@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
-const API_KEY = 'AIzaSyA59zx2HIq7AfnpKJ87vfQoTuZm2b9uUdw';
+const API_KEY = 'AIzaSyDLVlP4Zz0Vv1tIo4fzq6qi7PspYKTuD9Q';
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
 export async function GET(request: NextRequest) {
